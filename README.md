@@ -36,7 +36,7 @@ The corpus is the 26,503 shaders of `shaders.rpf` (26,497 went through the recom
 | Xbox DXIL to PC DXIL lowering | `tools/xbox/platform/xbox_dxil_lower.py`, `lower_all.py` | all 53 builder shaders lower and sign; 44 create as pipelines on a PC device |
 | `xmem.dll`, `d3d12_xs.dll` stand-ins, `D3D12XboxCreateDevice` | `tools/xbox/platform` | load and run; the device layer covers only the calls seen so far |
 | Object proxy with per-slot logging (`XS_TRACE=1`) | `xbox_device_proxy.h` | works; shows what a title calls |
-| `xgameruntime.dll` stand-in | `tools/xbox/platform/xgr` | 388 of 398 methods implemented (threading, async, offline user, system and startup answers, persistent local storage, installed package, local save games, offline store with the game licensed, launching, game UI drawn by the title, handle tracking); the rest log and fail |
+| `xgameruntime.dll` stand-in | `tools/xbox/platform/xgr` | 398 of 398 methods implemented (threading, async, offline user, system and startup answers, persistent local storage, installed package, local save games, offline store with the game licensed, launching, game UI drawn by the title, handle tracking, multiplayer activity invites, state sharing, in-game virtual keyboard text entry) |
 
 How to use all of it once the game executable is available: [`tools/xbox/platform/README.md`](tools/xbox/platform/README.md).
 

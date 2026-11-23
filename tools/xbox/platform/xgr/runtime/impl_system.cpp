@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <dxgi1_6.h>
 
+#include <algorithm>
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
@@ -546,6 +547,113 @@ HRESULT XGameUiShowTextEntryResult_impl(void*, task::AsyncBlock* async, uint32_t
   return hr;
 }
 
+HRESULT XGameUiShowMultiplayerActivityGameInviteAsync_impl(void*, task::AsyncBlock* async, void* user) {
+  if (!async || !user) return E_INVALIDARG;
+  const void* identity = reinterpret_cast<const void*>(&XGameUiShowMultiplayerActivityGameInviteAsync_impl);
+  ui::Callbacks callbacks = ui::title_callbacks();
+  if (!callbacks.showMultiplayerActivityGameInvite) return begin_without_ui(async, identity, "XGameUiShowMultiplayerActivityGameInviteAsync");
+  auto show = [callbacks, user](void* handle, task::Queue* queue) {
+    callbacks.showMultiplayerActivityGameInvite(handle, queue, user, callbacks.context);
+  };
+  return ui::begin_title_ui(async, identity, "XGameUiShowMultiplayerActivityGameInviteAsync", ui::Request::MultiplayerActivityGameInvite, show);
+}
+HRESULT XGameUiShowMultiplayerActivityGameInviteResult_impl(void*, task::AsyncBlock* async) {
+  return result_without_payload(async, reinterpret_cast<const void*>(&XGameUiShowMultiplayerActivityGameInviteAsync_impl));
+}
+
+HRESULT XGameUiShowStateShareAsync_impl(void*, task::AsyncBlock* async, void* user, const char* linkToken) {
+  if (!async || !user || !linkToken) return E_INVALIDARG;
+  const void* identity = reinterpret_cast<const void*>(&XGameUiShowStateShareAsync_impl);
+  return begin_without_ui(async, identity, "XGameUiShowStateShareAsync");
+}
+HRESULT XGameUiShowStateShareResult_impl(void*, task::AsyncBlock* async) {
+  return result_without_payload(async, reinterpret_cast<const void*>(&XGameUiShowStateShareAsync_impl));
+}
+
+struct GameUiTextEntryOptions {
+  uint32_t inputScope;
+  uint32_t positionHint;
+  uint32_t visibilityFlags;
+};
+
+struct GameUiTextEntryExtents {
+  float left;
+  float top;
+  float right;
+  float bottom;
+};
+
+struct GameUiTextEntry {
+  uint32_t inputScope = 0;
+  uint32_t positionHint = 0;
+  uint32_t visibilityFlags = 0;
+  uint32_t maxLength = 0;
+  uint32_t cursorIndex = 0;
+  std::string text;
+};
+
+HRESULT XGameUiTextEntryOpen_impl(void*, const GameUiTextEntryOptions* options, const char* initialText, uint32_t initialCursorIndex,
+                                  uint32_t maxLength, GameUiTextEntry** handle) {
+  if (!handle) return E_INVALIDARG;
+  *handle = nullptr;
+  auto entry = new GameUiTextEntry();
+  if (options) {
+    entry->inputScope = options->inputScope;
+    entry->positionHint = options->positionHint;
+    entry->visibilityFlags = options->visibilityFlags;
+  }
+  if (initialText) entry->text = initialText;
+  entry->cursorIndex = initialCursorIndex;
+  entry->maxLength = maxLength;
+  *handle = entry;
+  handles::opened(*handle, handles::Type::GameUiTextEntry);
+  return S_OK;
+}
+
+HRESULT XGameUiTextEntryClose_impl(void*, GameUiTextEntry* handle) {
+  if (!handle) return E_INVALIDARG;
+  handles::closed(handle);
+  delete handle;
+  return S_OK;
+}
+
+HRESULT XGameUiTextEntryGetState_impl(void*, GameUiTextEntry* handle, uint32_t* changeType, uint32_t* cursorIndex,
+                                      uint32_t* imeClauseStartIndex, uint32_t* imeClauseEndIndex, uint32_t bufferSize, char* buffer) {
+  if (!handle || !changeType || !cursorIndex || !imeClauseStartIndex || !imeClauseEndIndex) return E_INVALIDARG;
+  if (bufferSize && !buffer) return E_INVALIDARG;
+  *changeType = 0;
+  *cursorIndex = handle->cursorIndex;
+  *imeClauseStartIndex = 0;
+  *imeClauseEndIndex = 0;
+  if (buffer && bufferSize) {
+    size_t copyLen = (std::min)(static_cast<size_t>(bufferSize - 1), handle->text.size());
+    std::memcpy(buffer, handle->text.c_str(), copyLen);
+    buffer[copyLen] = '\0';
+  }
+  return S_OK;
+}
+
+HRESULT XGameUiTextEntryGetExtents_impl(void*, GameUiTextEntry* handle, GameUiTextEntryExtents* extents) {
+  if (!handle || !extents) return E_INVALIDARG;
+  extents->left = 0.0f;
+  extents->top = 0.0f;
+  extents->right = 0.0f;
+  extents->bottom = 0.0f;
+  return S_OK;
+}
+
+HRESULT XGameUiTextEntryUpdatePositionHint_impl(void*, GameUiTextEntry* handle, uint32_t positionHint) {
+  if (!handle) return E_INVALIDARG;
+  handle->positionHint = positionHint;
+  return S_OK;
+}
+
+HRESULT XGameUiTextEntryUpdateVisibility_impl(void*, GameUiTextEntry* handle, uint32_t visibilityFlags) {
+  if (!handle) return E_INVALIDARG;
+  handle->visibilityFlags = visibilityFlags;
+  return S_OK;
+}
+
 const Override kOverrides[] = {
     {"XSystemGetAppSpecificDeviceId", reinterpret_cast<void*>(&XSystemGetAppSpecificDeviceId_impl)},
     {"XSystemAllowFullDownloadBandwidth", reinterpret_cast<void*>(&XSystemAllowFullDownloadBandwidth_impl)},
@@ -587,6 +695,16 @@ const Override kOverrides[] = {
     {"XGameUiShowTextEntryAsync", reinterpret_cast<void*>(&XGameUiShowTextEntryAsync_impl)},
     {"XGameUiShowTextEntryResultSize", reinterpret_cast<void*>(&XGameUiShowTextEntryResultSize_impl)},
     {"XGameUiShowTextEntryResult", reinterpret_cast<void*>(&XGameUiShowTextEntryResult_impl)},
+    {"XGameUiShowMultiplayerActivityGameInviteAsync", reinterpret_cast<void*>(&XGameUiShowMultiplayerActivityGameInviteAsync_impl)},
+    {"XGameUiShowMultiplayerActivityGameInviteResult", reinterpret_cast<void*>(&XGameUiShowMultiplayerActivityGameInviteResult_impl)},
+    {"XGameUiTextEntryOpen", reinterpret_cast<void*>(&XGameUiTextEntryOpen_impl)},
+    {"XGameUiTextEntryClose", reinterpret_cast<void*>(&XGameUiTextEntryClose_impl)},
+    {"XGameUiTextEntryGetState", reinterpret_cast<void*>(&XGameUiTextEntryGetState_impl)},
+    {"XGameUiTextEntryGetExtents", reinterpret_cast<void*>(&XGameUiTextEntryGetExtents_impl)},
+    {"XGameUiTextEntryUpdatePositionHint", reinterpret_cast<void*>(&XGameUiTextEntryUpdatePositionHint_impl)},
+    {"XGameUiTextEntryUpdateVisibility", reinterpret_cast<void*>(&XGameUiTextEntryUpdateVisibility_impl)},
+    {"XGameUiShowStateShareAsync", reinterpret_cast<void*>(&XGameUiShowStateShareAsync_impl)},
+    {"XGameUiShowStateShareResult", reinterpret_cast<void*>(&XGameUiShowStateShareResult_impl)},
 };
 
 }  // namespace
