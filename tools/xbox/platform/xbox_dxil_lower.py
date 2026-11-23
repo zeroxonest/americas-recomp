@@ -25,8 +25,8 @@ Lowered so far (more are added as shaders need them):
   Min3/Max3_F32, Min3/Max3/Med3_U32, BFI, V_ALIGNBYTE_B32, WaveMin_U32, MakeUniform.i64   the obvious standard operations
   TypedLoad.i32            (handle, byte offset, format 65 = 8_UINT): the dword at (offset & ~3) of the raw buffer, byte (offset & 3);
                            only component 0 of the result may be used
-  global_load_dword{,x2,x3,x4}_with_cache, s_load_dword_with_cache, global_store_dword{,x3,x4}_with_cache,
-  global_atomic_{add,sub,fmin,fmax}
+  global_load_dword{,x2,x3,x4}_with_cache, s_load_dword_with_cache, global_store_dword{,x2,x3,x4}_with_cache,
+  global_atomic_{add,sub,and,or,xor,smin,smax,umin,umax,swap,fmin,fmax}
                            64-bit address -> (resource, offset) through an address table read with ResourceDescriptorHeap[table]
                            (the optional third argument, default 0): a 16-byte header, then 2^ADDRESS_TABLE_LOG2 entries of
                            (base low, base high, size, heap index) sorted by base, unused ones with base 0xFFFFFFFFFFFFFFFF. An unrolled
@@ -207,7 +207,7 @@ def lower(text):
     ins_re = re.compile(r"^\s*(%[\w.]+) = insertvalue (" + PAIR_RE + r") (undef|%[\w.]+|\{[^}]*\}), (?:half|i32) (%[\w.]+|[-+\w.]+), ([0-3])\s*$")
     ext_re = re.compile(r"^\s*(%[\w.]+) = extractvalue " + PAIR_RE + r" (%[\w.]+), ([0-3])\s*$")
     copysign_re = re.compile(r"^(\s*)(%[\w.]+) = (?:tail )?call float @llvm\.copysign\.f32\(float ([^,]+), float ([^)]+)\)\s*(?:,\s*![^;]*)?(?:;.*)?$")
-    store_re = re.compile(r"^(\s*)call void @xbox\.(global_store_dword(?:x[34])?_with_cache)\(i32 \d+, (.*?)\)\s*(?:,\s*![^;]*)?(?:;.*)?$")
+    store_re = re.compile(r"^(\s*)call void @xbox\.(global_store_dword(?:x[234])?_with_cache)\(i32 \d+, (.*?)\)\s*(?:,\s*![^;]*)?(?:;.*)?$")
     resret_re = re.compile(r"^(\s*)(%[\w.]+) = extractvalue %dx\.types\.ResRet\.i32 (%[\w.]+), (\d+)\s*$")
     call_re = re.compile(r"^(\s*)(%[\w.]+) = call ([^@]+?) @xbox\.([\w.]+)\(i32 \d+(?:, (.*?))?\)\s*(?:,\s*![^;]*)?(?:;.*)?$")
 
@@ -361,7 +361,19 @@ def lower(text):
                 pairs[dst] = comps
             n_lowered += 1
             continue
-        if name in ("global_atomic_add", "global_atomic_sub", "global_atomic_fmin", "global_atomic_fmax"):
+        ATOMIC_INT_OPS = {
+            "global_atomic_add": 0,
+            "global_atomic_and": 1,
+            "global_atomic_or": 2,
+            "global_atomic_xor": 3,
+            "global_atomic_smin": 4,
+            "global_atomic_smax": 5,
+            "global_atomic_umin": 6,
+            "global_atomic_umax": 7,
+            "global_atomic_swap": 8,
+            "global_atomic_xchg": 8,
+        }
+        if name in ATOMIC_INT_OPS or name in ("global_atomic_sub", "global_atomic_fmin", "global_atomic_fmax"):
             h, off = address(emit, operand(args[0]), True)
             v = operand(args[1])
             used.add("@dx.op.atomicBinOp.i32(")
@@ -370,8 +382,8 @@ def lower(text):
                 r = d or fresh()
                 emit("%s = call i32 @dx.op.atomicBinOp.i32(i32 78, %%dx.types.Handle %s, i32 %d, i32 %s, i32 undef, i32 undef, i32 %s)" % (r, h, op, off, value))
                 return r
-            if name == "global_atomic_add":
-                atomic(0, v, dst)
+            if name in ATOMIC_INT_OPS:
+                atomic(ATOMIC_INT_OPS[name], v, dst)
             elif name == "global_atomic_sub":
                 atomic(0, i("sub", 0, v), dst)
             else:
@@ -508,15 +520,20 @@ def lower(text):
         elif name == "MakeUniform.i64":
             emit("%s = call i64 @dx.op.waveReadLaneFirst.i64(i32 118, i64 %s)" % (dst, operand(args[0])))
             used.add("@dx.op.waveReadLaneFirst.i64(")
-        elif name == "TypedLoad.i32" and len(args) == 3 and operand(args[2]) == "65":
+        elif name == "TypedLoad.i32":
             h, off = operand(args[0]), operand(args[1])
-            r = fresh()
-            emit("%s = call %%dx.types.ResRet.i32 @dx.op.rawBufferLoad.i32(i32 139, %%dx.types.Handle %s, i32 %s, i32 undef, i8 1, i32 4)"
-                 % (r, h, i("and", off, -4)))
+            fmt = operand(args[2]) if len(args) > 2 else "65"
             used.add("@dx.op.rawBufferLoad.i32(")
-            w = fresh()
-            emit("%s = extractvalue %%dx.types.ResRet.i32 %s, 0" % (w, r))
-            bytes_[dst] = i("lshr", w, i("shl", i("and", off, 3), 3))
+            if fmt == "65":
+                r = fresh()
+                emit("%s = call %%dx.types.ResRet.i32 @dx.op.rawBufferLoad.i32(i32 139, %%dx.types.Handle %s, i32 %s, i32 undef, i8 1, i32 4)"
+                     % (r, h, i("and", off, -4)))
+                w = fresh()
+                emit("%s = extractvalue %%dx.types.ResRet.i32 %s, 0" % (w, r))
+                bytes_[dst] = i("lshr", w, i("shl", i("and", off, 3), 3))
+            else:
+                emit("%s = call %%dx.types.ResRet.i32 @dx.op.rawBufferLoad.i32(i32 139, %%dx.types.Handle %s, i32 %s, i32 undef, i8 1, i32 4)"
+                     % (dst, h, off))
         else:
             out.append(line)
             continue

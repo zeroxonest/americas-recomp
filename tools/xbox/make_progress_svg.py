@@ -199,7 +199,19 @@ def cls(n):
     return "Other"
 
 
-LOWERED = {"BFI", "MakeUniform.i32", "MakeUniform.i64", "Max3_F32", "Med3_F32", "Med3_U32", "Min3_F32", "Min3_U32", "Max3_U32", "V_ALIGNBYTE_B32", "WaveMin_U32"}
+LOWERED = {
+    "BFI", "Ballot64", "GetLaneID", "LaneSwizzle.i32", "MBCNT64",
+    "MakeUniform.i32", "MakeUniform.i64", "Max3_F32", "Max3_U32",
+    "Med3_F32", "Med3_U32", "Min3_F32", "Min3_U32", "ReadLane.i32",
+    "S_BCNT1_U64", "TypedLoad.i32", "V_ALIGNBYTE_B32", "V_CNDMASK_B32",
+    "V_PK_MAX_F16", "V_PK_MIN_F16", "WaveMin_U32",
+    "global_atomic_add", "global_atomic_sub", "global_atomic_fmin", "global_atomic_fmax",
+    "global_load_dword_with_cache", "global_load_dwordx2_with_cache",
+    "global_load_dwordx3_with_cache", "global_load_dwordx4_with_cache",
+    "global_store_dword_with_cache", "global_store_dwordx2_with_cache",
+    "global_store_dwordx3_with_cache", "global_store_dwordx4_with_cache",
+    "s_load_dword_with_cache",
+}
 left = collections.defaultdict(set)
 nb = 0
 for idx, v in BVH.items():

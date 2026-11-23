@@ -83,6 +83,38 @@ class XboxDxilAddressLowerTests(unittest.TestCase):
         self.assertNotIn("llvm.copysign", result)
         self.assertIn("and i32", result)
 
+    def test_store_dwordx2_lowers_cleanly(self):
+        result, _, left = lower_module.lower(function([
+            '  %1 = insertvalue { i32, i32 } undef, i32 10, 0',
+            '  %2 = insertvalue { i32, i32 } %1, i32 20, 1',
+            '  call void @xbox.global_store_dwordx2_with_cache(i32 363, i64 8192, { i32, i32 } %2, i32 undef, i32 undef)',
+        ]))
+        self.assertEqual(left, set())
+        self.assertRegex(result, r"rawBufferStore\.i32\(i32 140, %dx\.types\.Handle %\S+, i32 %\S+, i32 undef, i32 10, i32 20, i32 undef, i32 undef, i8 3, i32 4\)")
+
+    def test_integer_atomics(self):
+        result, _, left = lower_module.lower(function([
+            '  %1 = call i32 @xbox.global_atomic_and(i32 370, i64 64, i32 255)',
+            '  %2 = call i32 @xbox.global_atomic_or(i32 371, i64 64, i32 1)',
+            '  %3 = call i32 @xbox.global_atomic_xor(i32 372, i64 64, i32 2)',
+            '  %4 = call i32 @xbox.global_atomic_smin(i32 373, i64 64, i32 -5)',
+            '  %5 = call i32 @xbox.global_atomic_smax(i32 374, i64 64, i32 5)',
+            '  %6 = call i32 @xbox.global_atomic_umin(i32 375, i64 64, i32 10)',
+            '  %7 = call i32 @xbox.global_atomic_umax(i32 376, i64 64, i32 20)',
+            '  %8 = call i32 @xbox.global_atomic_swap(i32 377, i64 64, i32 30)',
+        ]))
+        self.assertEqual(left, set())
+        ops = re.findall(r"atomicBinOp\.i32\(i32 78, %dx\.types\.Handle %\S+, i32 (\d+),", result)
+        self.assertEqual(ops, ["1", "2", "3", "4", "5", "6", "7", "8"])
+
+    def test_typed_load_kernel_lowers_cleanly(self):
+        text = (PLATFORM / "typedload_kernel.ll").read_text(encoding="utf-8")
+        result, count, left = lower_module.lower(text)
+        self.assertEqual(left, set())
+        self.assertEqual(count, 2)
+        self.assertNotIn("@xbox.", result)
+        self.assertIn("rawBufferLoad.i32", result)
+
 
 class XboxDxilSm66ResourceTests(unittest.TestCase):
     def rewrite(self, text, wave="64"):

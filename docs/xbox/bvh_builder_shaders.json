@@ -6,7 +6,7 @@
    "global_store_dword_with_cache",
    "global_store_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "1": {
   "name": "PT_WriteOfflinePartition",
@@ -15,7 +15,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "2": {
   "name": "PT_WritePartitions",
@@ -23,7 +23,7 @@
   "xbox_intrinsics": [
    "global_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "3": {
   "name": "PT_WriteInstances",
@@ -32,7 +32,7 @@
    "global_load_dword_with_cache",
    "global_load_dwordx3_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "4": {
   "name": "PT_LoadInstances",
@@ -47,7 +47,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "5": {
   "name": "PT_BeginPass",
@@ -56,7 +56,7 @@
    "global_load_dword_with_cache",
    "global_store_dwordx3_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "6": {
   "name": "ResetCounterValues",
@@ -71,7 +71,7 @@
    "global_store_dwordx3_with_cache",
    "global_store_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "8": {
   "name": "CopyForBVHUpdate",
@@ -103,7 +103,7 @@
    "global_load_dwordx4_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "12": {
   "name": "CalculateMortonCodes64",
@@ -117,7 +117,7 @@
    "global_load_dwordx4_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "13": {
   "name": "BitonicPreSortCS",
@@ -126,7 +126,7 @@
    "BFI",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "14": {
   "name": "BitonicOuterSortCS",
@@ -135,7 +135,7 @@
    "BFI",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "15": {
   "name": "BitonicInnerSortCS",
@@ -144,7 +144,7 @@
    "BFI",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "16": {
   "name": "BitonicPreSort64CS",
@@ -153,7 +153,7 @@
    "BFI",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "17": {
   "name": "BitonicOuterSort64CS",
@@ -162,7 +162,7 @@
    "BFI",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "18": {
   "name": "BitonicInnerSort64CS",
@@ -171,7 +171,7 @@
    "BFI",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "19": {
   "name": "RadixReset",
@@ -280,7 +280,7 @@
   "xbox_intrinsics": [
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "30": {
   "name": "RearrangeBVHs",
@@ -289,7 +289,7 @@
    "global_load_dword_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "31": {
   "name": "LoadInstances",
@@ -307,7 +307,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "32": {
   "name": "SplitInstances",
@@ -319,7 +319,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "33": {
   "name": "LoadTriangles",
@@ -334,7 +334,7 @@
    "global_load_dwordx4_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "34": {
   "name": "LoadProceduralGeometry",
@@ -345,7 +345,7 @@
    "global_atomic_fmin",
    "global_atomic_sub"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "35": {
   "name": "ReloadTriangles",
@@ -359,7 +359,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "36": {
   "name": "ReloadProcedurals",
@@ -369,7 +369,7 @@
    "global_atomic_fmin",
    "global_load_dwordx3_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "37": {
   "name": "PT_ConstructBVH4",
@@ -396,7 +396,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "40": {
   "name": "BuildBVHSplits",
@@ -405,7 +405,7 @@
    "global_load_dword_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "41": {
   "name": "BuildBVHSplits64",
@@ -414,7 +414,7 @@
    "global_load_dword_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "42": {
   "name": "FindTreelets",
@@ -429,7 +429,7 @@
    "global_load_dword_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "43": {
   "name": "ResetKDOP",
@@ -449,7 +449,7 @@
    "global_load_dwordx3_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "45": {
   "name": "BuildApexPointMap",
@@ -466,7 +466,7 @@
    "global_load_dword_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "47": {
   "name": "DecompressHeader",
@@ -485,7 +485,7 @@
    "global_load_dwordx3_with_cache",
    "global_load_dwordx4_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  },
  "49": {
   "name": "Box16Rehydration",
@@ -518,6 +518,6 @@
    "global_load_dword_with_cache",
    "s_load_dword_with_cache"
   ],
-  "lowered_compiles_on_amd_pc": false
+  "lowered_compiles_on_amd_pc": true
  }
 }
